@@ -83,7 +83,7 @@ router.delete('/:id', (req, res) => {
             if (postToDelete) {
                 Post.remove(req.params.id)
                     .then( () => {
-                        res.status(200).json(postToDelete)
+                        res.status(200).json(postToDelete);
                     })
                     .catch(err => {
                         console.log(err);
@@ -96,6 +96,28 @@ router.delete('/:id', (req, res) => {
         .catch(err => {
             console.log(err);
             res.status(500).json({message: "The post could not be removed"});
+        });
+});
+
+router.get('/:id/comments', (req, res) => {
+    Post.findById(req.params.id)
+        .then( postOfInterest => {
+            if (postOfInterest) {
+                Post.findPostComments(req.params.id)
+                    .then(allPostComments => {
+                        res.status(200).json(allPostComments);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({message: "The comments information could not be retrieved"});
+                    });
+            } else {
+                res.status(404).json({message: "The post with the specified ID does not exist"});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({message: "The comments information could not be retrieved"});
         });
 });
 
