@@ -36,6 +36,10 @@ router.post('/', (req, res) => {
                 Post.findById(newPostID.id)
                     .then (addedPost => {
                         res.status(201).json(addedPost)
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({message: "There was an error while saving the post to the database"});
                     });         
             })
             .catch(err => {
@@ -58,6 +62,10 @@ router.put('/:id', (req, res) => {
                         } else {
                             res.status(404).json({message: "The post with the specified ID does not exist"});
                         }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({message: "The post information could not be modified"});
                     });
             })
             .catch(err => {
@@ -67,6 +75,28 @@ router.put('/:id', (req, res) => {
     } else {
         res.status(400).json({message: "Please provide title and contents for the post"});
     }
+});
+
+router.delete('/:id', (req, res) => {
+    Post.findById(req.params.id)
+        .then(postToDelete => {
+            if (postToDelete) {
+                Post.remove(req.params.id)
+                    .then( () => {
+                        res.status(200).json(postToDelete)
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({message: "The post could not be removed"});
+                    });
+            } else {
+                res.status(404).json({message: "The post with the specified ID does not exist"});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({message: "The post could not be removed"});
+        });
 });
 
 module.exports = router
